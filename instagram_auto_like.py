@@ -5,24 +5,39 @@ from selenium import webdriver
 from slacker import Slacker
 from urllib.parse import quote
 
-token = 'your slack token'
+token = 'your token key'
 slacker = Slacker(token)
+options = webdriver.ChromeOptions()
+# options.add_argument("headless")
+options.add_argument("window-size=1920x1080")
+# options.add_argument("disable-gpu")
+options.add_argument("user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36")
+options.add_argument("lang=ko_KR")
 
-browser = webdriver.PhantomJS(service_args=["--ignore-ssl-errors=true", "--ssl-protocol=any"])
-browser.set_window_size(1280, 1024)
 
-browser.get('https://instagram.com/')
 time.sleep(3)
 
 
 id = 'id'
 password = 'password'
-hash_tags = ['your','hashtag']
-most_like_tags = hash_tags[:1]
+most_like_tags = []
+hash_tags = ['your hash tag1', 'your hash tag2']
 
 class InstaJob:
     @classmethod
     def run(cls, start_index=1, end_index=2):
+        print('browser loading..')
+        global browser
+        browser = webdriver.Chrome('chromedriver', chrome_options=options)
+
+        browser.execute_script("Object.defineProperty(navigator, 'plugins', {get: function() {return[1, 2, 3, 4, 5]}})")
+        browser.execute_script(
+            "Object.defineProperty(navigator, 'languages', {get: function() {return ['ko-KR', 'ko']}})")
+        browser.execute_script(
+            "const getParameter = WebGLRenderingContext.getParameter;WebGLRenderingContext.prototype.getParameter = function(parameter) {if (parameter === 37445) {return 'NVIDIA Corporation'} if (parameter === 37446) {return 'NVIDIA GeForce GTX 980 Ti OpenGL Engine';}return getParameter(parameter);};")
+
+        browser.get('https://instagram.com/')
+
         start_text = "{id} Insta Auto Like Start : {time}".format(id=id, time=datetime.datetime.now())
         print('start')
         slacker.chat.post_message('#general', text=start_text)
@@ -35,7 +50,7 @@ class InstaJob:
 
     @classmethod
     def login(cls):
-        login_link = browser.find_element_by_css_selector('a._b93kq')
+        login_link = browser.find_element_by_css_selector('p._g9ean').find_element_by_css_selector('a')
         login_link.click()
 
         username_input = browser.find_elements_by_css_selector('input._o716c')[0]
@@ -51,6 +66,7 @@ class InstaJob:
     def timeline_like(cls):
         print('timeline like start')
         browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+        #browser.find_elements_by_css_selector('a._giku3._8scx2._e8tsh.coreSpriteGlyphBlack')[0].click()
         try:
             for i in range(130):
                 time.sleep(3)
@@ -67,14 +83,14 @@ class InstaJob:
             print(hash_tag + " 좋아요 작업을 시작합니다")
             browser.get("https://www.instagram.com/explore/tags/" + quote(hash_tag))
             time.sleep(4 + random.random() * 1.2)
-            element = browser.find_elements_by_css_selector("div._mck9w._gvoze._f2mse")[9]
+            element = browser.find_elements_by_css_selector("div._mck9w._gvoze._tn0ps")[9]
             element.find_element_by_css_selector("div._e3il2").click()
             time.sleep(5)
 
             if any(e in hash_tag for e in most_like_tags):
                 count_number = 50
             else:
-                count_number = 30
+                count_number = 120
 
             for i in range(1, count_number):
                 try:
@@ -87,4 +103,5 @@ class InstaJob:
                     time.sleep(1 + random.random() * 1.2)
 
 if __name__ == '__main__':
-    InstaJob.run()
+    import instagram_auto_like
+    instagram_auto_like.InstaJob.run()
