@@ -13,6 +13,8 @@
 
 ### Notice
 - 인스타그램에서 element의 주소값을 종종 바꿉니다. 그럴 경우 Error가 당연히 발생합니다
+    - 종종 수정해서 commit하니 계속 관심가지실 분들은 Watch를 눌러주세요!
+- 타임라인을 좋아요할 경우 not clickable point라는 에러가 발생하곤 합니다. 추후 수정할 예정입니다
 
 ### 사용 방법
 - Clone : ```git clone git@github.com:zzsza/instagram-auto-like-with-Python.git```

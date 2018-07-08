@@ -9,7 +9,7 @@ from selenium.common.exceptions import NoSuchElementException
 
 # ======== 1. Setting Options =======
 # slack_token : 작업이 진행될 때 중간 중간 슬랙에 메세지 발송
-slack_token = 'token_value'
+slack_token = 'token'
 slacker = Slacker(slack_token)
 options = webdriver.ChromeOptions()
 
@@ -27,14 +27,14 @@ options.add_argument("lang=ko_KR")
 id = 'id'
 password = 'password'
 
-timeline_likg_count = 120
+timeline_like_count = 120
 
-# important_hash_tags는 중요해서 많이 like할 해시태그
-# hash_tags는 보통의 해시태그
+# hash_tags : 좋아요할 전체 해시태그 리스트
+# important_hash_tags : 중요해서 더 많이 like할 해시태그 리스트
 important_hash_tags = ['코딩']
 important_hash_tags_count = 120
-hash_tags = ['데일리','좋반', '공대생', '공스타그램', '책스타그램','파이썬','프로그래밍','개발자','통계학과','스타트업','딥러닝']
-hash_tags_count = 50
+hash_tags = ['코딩', '공대생', '공스타그램', '책스타그램','파이썬','프로그래밍','개발자','통계학과','스타트업','딥러닝']
+hash_tags_count = 60
 
 # ======== 3. InstaJob Class ======
 
@@ -65,6 +65,7 @@ class InstaJob:
             cls.hash_tags_like()
         end_text = "{id} Insta Auto Like End : {time}".format(id=id, time=datetime.datetime.now())
         slacker.chat.post_message('#general', text=end_text)
+        browser.quit()
 
     @classmethod
     def login(cls):
@@ -89,16 +90,16 @@ class InstaJob:
     def timeline_like(cls):
         """
         timeline_likg_count만큼 타임라인의 좋아요를 누름
+        이 부분에 not clickable at point라고 error가 발생되고 있습니다. 추후 수정 필요
         """
         print('timeline like start')
         browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 
         try:
-            for i in range(timeline_likg_count):
+            for i in range(timeline_like_count):
                 time.sleep(1.5)
                 browser.find_elements_by_css_selector('span.glyphsSpriteHeart__outline__24__grey_9.Szr5J')[0].click()
                 time.sleep(1.5)
-                browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 
         except Exception as e:
             print("Error! ", e)
